@@ -1,4 +1,4 @@
-module gcp
+module github.com/pkg4go/gcp
 
 go 1.14
 
