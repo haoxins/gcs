@@ -41,3 +41,18 @@ func (c *BigQueryClient) GetRowsFromSQL(sql string) [][]bigquery.Value {
 
 	return rows
 }
+
+// InsertRows Insert rows to table
+func (c *BigQueryClient) InsertRows(dataSet string, table string, rows interface{}) {
+	ctx := context.Background()
+
+	client, err := bigquery.NewClient(ctx, c.ProjectID)
+	tools.AssertError(err)
+	defer client.Close()
+
+	inserter := client.Dataset(dataSet).Table(table).Inserter()
+	inserter.SkipInvalidRows = true
+	inserter.IgnoreUnknownValues = true
+
+	inserter.Put(ctx, rows)
+}
