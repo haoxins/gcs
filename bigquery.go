@@ -11,6 +11,7 @@ import (
 // BigQueryClient The wrapper of BigQuery client
 type BigQueryClient struct {
 	ProjectID string
+	// TODO - Timeout
 }
 
 // GetRowsFromSQL Get the result rows from SQL
