@@ -1,6 +1,10 @@
 
-## GCP tools
+## Golang GCP tools
 
-* Some GCP SDK's wrappers for **serverless usage scenarios**.
+* Some GCP SDK's wrappers for **Serverless usage scenarios**.
   - GCP functions
   - GCP cloud run
+
+## License
+
+**MIT**
