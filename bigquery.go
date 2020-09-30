@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/pkg4go/tools"
+	"github.com/haoxins/tools/v2"
 	"google.golang.org/api/iterator"
 )
 

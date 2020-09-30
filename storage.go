@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/pkg4go/tools"
+	"github.com/haoxins/tools/v2"
 )
 
 // StorageClient ...
