@@ -13,16 +13,20 @@ import (
 type StorageClient struct {
 	ProjectID string
 	Timeout   time.Duration
+	Bucket    string
 }
 
-func (c *StorageClient) Write(bucket, object string, content io.Reader) {
+func (c *StorageClient) Write(object string, content io.Reader) {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
+	tools.AssertError(err)
+
 	ctx, cancel := context.WithTimeout(ctx, c.Timeout)
 	defer cancel()
 
-	wc := client.Bucket(bucket).Object(object).NewWriter(ctx)
+	wc := client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
 	_, err = io.Copy(wc, content)
 	tools.AssertError(err)
+
 	wc.Close()
 }
