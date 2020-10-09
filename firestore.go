@@ -41,7 +41,6 @@ func (c *FireStoreClient) Set(id string, data interface{}) {
 
 	_, err := client.Collection(c.Collection).Doc(id).Set(ctx, data)
 	tools.AssertError(err)
-
 }
 
 func (c *FireStoreClient) initFireStoreClient() (*firestore.Client, context.Context) {
