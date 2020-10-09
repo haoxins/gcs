@@ -5,6 +5,7 @@ go 1.15
 require (
 	cloud.google.com/go v0.68.0 // indirect
 	cloud.google.com/go/bigquery v1.11.2
+	cloud.google.com/go/firestore v1.3.0
 	cloud.google.com/go/storage v1.12.0
 	github.com/haoxins/tools/v2 v2.0.1
 	go.opencensus.io v0.22.5 // indirect
