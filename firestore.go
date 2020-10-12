@@ -52,8 +52,23 @@ func (c *FireStoreClient) initFireStoreClient() (*firestore.Client, context.Cont
 	return client, ctx
 }
 
+var maxWritesAllowedPerRequest = 499 // 500
 // BatchInsert - Batch insert
 func (c *FireStoreClient) BatchInsert(docs []interface{}) (allIds []string) {
+	var ids []string
+	// TODO - transaction works really
+	for len(docs) > maxWritesAllowedPerRequest {
+		offset := len(docs) - maxWritesAllowedPerRequest
+		ids = append(ids, c.batchInsert(docs[offset:])...)
+		docs = docs[0:offset]
+	}
+
+	ids = append(ids, c.batchInsert(docs)...)
+
+	return ids
+}
+
+func (c *FireStoreClient) batchInsert(docs []interface{}) (allIds []string) {
 	var ids []string
 
 	if len(docs) == 0 {

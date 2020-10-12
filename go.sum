@@ -114,8 +114,6 @@ github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
 github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+vpHVxEJEs9eg=
 github.com/googleapis/gax-go/v2 v2.0.5 h1:sjZBwGj9Jlw33ImPtvFviGYvseOtDM7hkSKB7+Tv3SM=
 github.com/googleapis/gax-go/v2 v2.0.5/go.mod h1:DWXyrwAJ9X0FpwwEdw+IPEYBICEFu5mhpdKc/us6bOk=
-github.com/haoxins/tools/v2 v2.3.0 h1:rfivtUda/J5aqkhZ9LQ9TUCjrgfrvmJhvFg99VbPKAc=
-github.com/haoxins/tools/v2 v2.3.0/go.mod h1:Rw6Bw7ONFTsyusxFSQTycb4WwFel19QxYzzXRv3382U=
 github.com/haoxins/tools/v2 v2.3.1 h1:cd8kdfG3FKK0mNJ6xn9jnlI1rnmcDFFgXTCkNjPe4fc=
 github.com/haoxins/tools/v2 v2.3.1/go.mod h1:Rw6Bw7ONFTsyusxFSQTycb4WwFel19QxYzzXRv3382U=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
