@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/firestore"
+	"github.com/google/uuid"
 	"github.com/haoxins/tools/v2"
 )
 
@@ -49,4 +50,28 @@ func (c *FireStoreClient) initFireStoreClient() (*firestore.Client, context.Cont
 	tools.AssertError(err)
 
 	return client, ctx
+}
+
+// BatchInsert - Batch insert
+func (c *FireStoreClient) BatchInsert(docs []interface{}) (allIds []string) {
+	client, ctx := c.initFireStoreClient()
+	defer client.Close()
+
+	batch := client.Batch()
+	var ids []string
+
+	for _, doc := range docs {
+		id := uuid.New().String()
+		// Create
+		ref := client.Collection(c.Collection).Doc(id)
+		batch.Set(ref, doc)
+
+		ids = append(ids, id)
+	}
+
+	// Commit
+	_, err := batch.Commit(ctx)
+	tools.AssertError(err)
+
+	return ids
 }
