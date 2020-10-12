@@ -54,11 +54,16 @@ func (c *FireStoreClient) initFireStoreClient() (*firestore.Client, context.Cont
 
 // BatchInsert - Batch insert
 func (c *FireStoreClient) BatchInsert(docs []interface{}) (allIds []string) {
+	var ids []string
+
+	if len(docs) == 0 {
+		return ids
+	}
+
 	client, ctx := c.initFireStoreClient()
 	defer client.Close()
 
 	batch := client.Batch()
-	var ids []string
 
 	for _, doc := range docs {
 		id := uuid.New().String()

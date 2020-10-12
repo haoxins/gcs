@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/firestore v1.3.0
 	cloud.google.com/go/storage v1.12.0
 	github.com/google/uuid v1.1.2
-	github.com/haoxins/tools/v2 v2.3.0
+	github.com/haoxins/tools/v2 v2.3.1
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb // indirect
 	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
