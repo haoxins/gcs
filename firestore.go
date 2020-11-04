@@ -41,13 +41,13 @@ func (c *FireStoreClient) Set(id string, data interface{}) {
 	defer client.Close()
 
 	_, err := client.Collection(c.Collection).Doc(id).Set(ctx, data)
-	tools.AssertError(err)
+	tools.PanicError(err)
 }
 
 func (c *FireStoreClient) initFireStoreClient() (*firestore.Client, context.Context) {
 	ctx := context.Background()
 	client, err := firestore.NewClient(ctx, c.ProjectID)
-	tools.AssertError(err)
+	tools.PanicError(err)
 
 	return client, ctx
 }
@@ -91,7 +91,7 @@ func (c *FireStoreClient) batchInsert(docs []interface{}) (allIds []string) {
 
 	// Commit
 	_, err := batch.Commit(ctx)
-	tools.AssertError(err)
+	tools.PanicError(err)
 
 	return ids
 }

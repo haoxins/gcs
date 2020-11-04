@@ -19,14 +19,14 @@ type StorageClient struct {
 func (c *StorageClient) Write(object string, content io.Reader) {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
-	tools.AssertError(err)
+	tools.PanicError(err)
 
 	ctx, cancel := context.WithTimeout(ctx, c.Timeout)
 	defer cancel()
 
 	wc := client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
 	_, err = io.Copy(wc, content)
-	tools.AssertError(err)
+	tools.PanicError(err)
 
 	wc.Close()
 }
