@@ -1,6 +1,8 @@
+[![Go Docs Badge]][Go Docs]
 
 ## Golang GCP tools
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/haoxins/gcp/v2)](https://pkg.go.dev/github.com/haoxins/gcp/v2)
+- Some tiny GCP SDK's wrappers.
 
-* Some GCP SDK's wrappers for **Serverless usage scenarios**.
+[Go Docs Badge]: https://pkg.go.dev/badge/github.com/haoxins/gcp/v3
+[Go Docs]: https://pkg.go.dev/github.com/haoxins/gcp/v3
