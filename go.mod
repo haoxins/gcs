@@ -1,4 +1,4 @@
-module github.com/haoxins/gcp
+module github.com/haoxins/gcp/v3
 
 go 1.18
 
