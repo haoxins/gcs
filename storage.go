@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -18,12 +19,36 @@ type StorageClient struct {
 	client    *storage.Client
 }
 
-func (c *StorageClient) Write(object string, source io.Reader) error {
+func (c *StorageClient) Download(dest string, object string) error {
+	dst, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+
+	src, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return err
+	}
+
+	src.Close()
+
+	return nil
+}
+
+func (c *StorageClient) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
 	sink := c.client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
-	_, err := io.Copy(sink, source)
+	_, err := io.Copy(sink, src)
 	if err != nil {
 		return err
 	}
@@ -37,17 +62,17 @@ func (c *StorageClient) Read(object string, sink io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	source, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	src, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.Copy(sink, source)
+	_, err = io.Copy(sink, src)
 	if err != nil {
 		return err
 	}
 
-	source.Close()
+	src.Close()
 
 	return nil
 }
