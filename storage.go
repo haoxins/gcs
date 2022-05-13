@@ -19,10 +19,10 @@ type StorageClient struct {
 	client    *storage.Client
 }
 
-func (c *StorageClient) Download(dest string, object string) error {
+func (c *StorageClient) Download(dest string, object string) (int64, error) {
 	dst, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer dst.Close()
 
@@ -31,16 +31,16 @@ func (c *StorageClient) Download(dest string, object string) error {
 
 	src, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	_, err = io.Copy(dst, src)
+	written, err := io.Copy(dst, src)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	src.Close()
 
-	return nil
+	return written, nil
 }
 
 func (c *StorageClient) Write(object string, src io.Reader) error {
