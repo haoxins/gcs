@@ -13,10 +13,8 @@ import (
 
 // StorageClient is a client for Google Cloud Storage
 type StorageClient struct {
-	ProjectID string
-	Bucket    string
-	Timeout   time.Duration
-	client    *storage.Client
+	Bucket  string
+	Timeout time.Duration
 }
 
 func (c *StorageClient) Download(dest string, object string) (int64, error) {
@@ -29,10 +27,18 @@ func (c *StorageClient) Download(dest string, object string) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	src, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return 0, err
 	}
+
+	defer client.Close()
+
+	src, err := client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	if err != nil {
+		return 0, err
+	}
+
 	written, err := io.Copy(dst, src)
 	if err != nil {
 		return 0, err
@@ -47,8 +53,15 @@ func (c *StorageClient) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	sink := c.client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
-	_, err := io.Copy(sink, src)
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer client.Close()
+
+	sink := client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
+	_, err = io.Copy(sink, src)
 	if err != nil {
 		return err
 	}
@@ -62,7 +75,14 @@ func (c *StorageClient) Read(object string, sink io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	src, err := c.client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer client.Close()
+
+	src, err := client.Bucket(c.Bucket).Object(object).NewReader(ctx)
 	if err != nil {
 		return err
 	}
@@ -83,9 +103,11 @@ func (c *StorageClient) WriteString(object string, content string) error {
 
 func (c *StorageClient) ReadString(object string) (string, error) {
 	buf := new(bytes.Buffer)
+
 	err := c.Read(object, buf)
 	if err != nil {
 		return "", err
 	}
+
 	return buf.String(), nil
 }
