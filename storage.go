@@ -9,15 +9,18 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 // StorageClient is a client for Google Cloud Storage
 type StorageClient struct {
-	Bucket  string
-	Timeout time.Duration
+	Bucket                string
+	Timeout               time.Duration
+	WithoutAuthentication bool
 }
 
 func (c *StorageClient) Download(dest string, object string) (int64, error) {
+	// TODO - Clean up file if error
 	dst, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return 0, err
@@ -27,7 +30,7 @@ func (c *StorageClient) Download(dest string, object string) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := storage.NewClient(ctx)
+	client, err := c.newClient(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -53,7 +56,7 @@ func (c *StorageClient) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := storage.NewClient(ctx)
+	client, err := c.newClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -75,7 +78,7 @@ func (c *StorageClient) Read(object string, sink io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := storage.NewClient(ctx)
+	client, err := c.newClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -110,4 +113,12 @@ func (c *StorageClient) ReadString(object string) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+func (c *StorageClient) newClient(ctx context.Context) (*storage.Client, error) {
+	if c.WithoutAuthentication {
+		return storage.NewClient(ctx, option.WithoutAuthentication())
+	} else {
+		return storage.NewClient(ctx)
+	}
 }

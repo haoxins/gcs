@@ -2,7 +2,11 @@ module github.com/haoxins/gcp/v3
 
 go 1.18
 
-require cloud.google.com/go/storage v1.22.0
+require (
+	cloud.google.com/go/storage v1.22.0
+	github.com/onsi/ginkgo/v2 v2.1.4
+	github.com/onsi/gomega v1.19.0
+)
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
@@ -24,4 +28,5 @@ require (
 	google.golang.org/genproto v0.0.0-20220405205423-9d709892a2bf // indirect
 	google.golang.org/grpc v1.45.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
