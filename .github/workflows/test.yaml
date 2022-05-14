@@ -1,0 +1,11 @@
+name: Test
+
+on:
+  push:
+    branches: [ v3 ]
+  pull_request:
+    branches: [ v3 ]
+
+jobs:
+  test:
+    uses: haoxins/github-workflows/.github/workflows/go-test.yaml@main
