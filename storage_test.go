@@ -23,4 +23,16 @@ var _ = Describe("Test Storage", func() {
 
 		os.Remove("test.tar")
 	})
+
+	It("Download should not create file if the object does not exist", func() {
+		s := StorageClient{
+			Bucket:                "gcp-public-data-nexrad-l2",
+			Timeout:               time.Second * 10,
+			WithoutAuthentication: true,
+		}
+
+		written, err := s.Download("not-exists.tar", "not-exists.tar")
+		Expect(err).To(BeNil())
+		Expect(written).To(BeNumerically("==", 0))
+	})
 })

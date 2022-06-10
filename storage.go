@@ -3,6 +3,7 @@ package gcp
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"os"
 	"strings"
@@ -20,12 +21,6 @@ type StorageClient struct {
 }
 
 func (c *StorageClient) Download(dest string, object string) (int64, error) {
-	// TODO - Clean up file if error
-	dst, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		return 0, err
-	}
-	defer dst.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -37,7 +32,25 @@ func (c *StorageClient) Download(dest string, object string) (int64, error) {
 
 	defer client.Close()
 
-	src, err := client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	handle := client.Bucket(c.Bucket).Object(object)
+
+	// Check if the object exists
+	_, err = handle.Attrs(ctx)
+	if errors.Is(err, storage.ErrObjectNotExist) {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	// TODO - Clean up file if error
+	dst, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return 0, err
+	}
+	defer dst.Close()
+
+	src, err := handle.NewReader(ctx)
 	if err != nil {
 		return 0, err
 	}
