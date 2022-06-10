@@ -1,4 +1,4 @@
-package gcp
+package gcs
 
 import (
 	"testing"
@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestGCP(t *testing.T) {
+func TestGCS(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	RunSpecs(t, "GCP Suite")
+	RunSpecs(t, "GCS Suite")
 }

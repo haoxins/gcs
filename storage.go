@@ -1,4 +1,4 @@
-package gcp
+package gcs
 
 import (
 	"bytes"
@@ -13,14 +13,14 @@ import (
 	"google.golang.org/api/option"
 )
 
-// StorageClient is a client for Google Cloud Storage
-type StorageClient struct {
+// Client is a client for Google Cloud Storage
+type Client struct {
 	Bucket                string
 	Timeout               time.Duration
 	WithoutAuthentication bool
 }
 
-func (c *StorageClient) Download(dest string, object string) (int64, error) {
+func (c *Client) Download(dest string, object string) (int64, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -65,7 +65,7 @@ func (c *StorageClient) Download(dest string, object string) (int64, error) {
 	return written, nil
 }
 
-func (c *StorageClient) Write(object string, src io.Reader) error {
+func (c *Client) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
@@ -87,7 +87,7 @@ func (c *StorageClient) Write(object string, src io.Reader) error {
 	return nil
 }
 
-func (c *StorageClient) Read(object string, sink io.Writer) error {
+func (c *Client) Read(object string, sink io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
@@ -113,11 +113,11 @@ func (c *StorageClient) Read(object string, sink io.Writer) error {
 	return nil
 }
 
-func (c *StorageClient) WriteString(object string, content string) error {
+func (c *Client) WriteString(object string, content string) error {
 	return c.Write(object, strings.NewReader(content))
 }
 
-func (c *StorageClient) ReadString(object string) (string, error) {
+func (c *Client) ReadString(object string) (string, error) {
 	buf := new(bytes.Buffer)
 
 	err := c.Read(object, buf)
@@ -128,7 +128,7 @@ func (c *StorageClient) ReadString(object string) (string, error) {
 	return buf.String(), nil
 }
 
-func (c *StorageClient) newClient(ctx context.Context) (*storage.Client, error) {
+func (c *Client) newClient(ctx context.Context) (*storage.Client, error) {
 	if c.WithoutAuthentication {
 		return storage.NewClient(ctx, option.WithoutAuthentication())
 	} else {
