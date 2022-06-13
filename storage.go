@@ -21,18 +21,16 @@ type Client struct {
 }
 
 func (c *Client) Download(dest string, object string) (int64, error) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := c.newClient(ctx)
+	gcsClient, err := c.newClient(ctx)
 	if err != nil {
 		return 0, err
 	}
+	defer gcsClient.Close()
 
-	defer client.Close()
-
-	handle := client.Bucket(c.Bucket).Object(object)
+	handle := gcsClient.Bucket(c.Bucket).Object(object)
 
 	// Check if the object exists
 	_, err = handle.Attrs(ctx)
@@ -69,14 +67,13 @@ func (c *Client) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := c.newClient(ctx)
+	gcsClient, err := c.newClient(ctx)
 	if err != nil {
 		return err
 	}
+	defer gcsClient.Close()
 
-	defer client.Close()
-
-	sink := client.Bucket(c.Bucket).Object(object).NewWriter(ctx)
+	sink := gcsClient.Bucket(c.Bucket).Object(object).NewWriter(ctx)
 	_, err = io.Copy(sink, src)
 	if err != nil {
 		return err
@@ -91,14 +88,13 @@ func (c *Client) Read(object string, sink io.Writer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
-	client, err := c.newClient(ctx)
+	gcsClient, err := c.newClient(ctx)
 	if err != nil {
 		return err
 	}
+	defer gcsClient.Close()
 
-	defer client.Close()
-
-	src, err := client.Bucket(c.Bucket).Object(object).NewReader(ctx)
+	src, err := gcsClient.Bucket(c.Bucket).Object(object).NewReader(ctx)
 	if err != nil {
 		return err
 	}
@@ -117,15 +113,15 @@ func (c *Client) WriteString(object string, content string) error {
 	return c.Write(object, strings.NewReader(content))
 }
 
-func (c *Client) ReadString(object string) (string, error) {
+func (c *Client) ReadString(object string) string {
 	buf := new(bytes.Buffer)
 
 	err := c.Read(object, buf)
 	if err != nil {
-		return "", err
+		return ""
 	}
 
-	return buf.String(), nil
+	return buf.String()
 }
 
 func (c *Client) newClient(ctx context.Context) (*storage.Client, error) {

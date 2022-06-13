@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/haoxins/g"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -34,5 +35,28 @@ var _ = Describe("Test Storage", func() {
 		written, err := c.Download("not-exists.tar", "not-exists.tar")
 		Expect(err).To(BeNil())
 		Expect(written).To(BeNumerically("==", 0))
+	})
+
+	It("ReadString and WriteString should work", func() {
+		bucket := os.Getenv("GCS_BUCKET")
+		if bucket == "" {
+			Skip("Skip because GCS_BUCKET is not set")
+		}
+
+		c := Client{
+			Bucket:                bucket,
+			Timeout:               time.Second * 10,
+			WithoutAuthentication: false,
+		}
+
+		name := "haoxins-gcs-package-test.txt"
+		value := g.String(time.Now().Unix())
+
+		s := c.ReadString("not-exists.txt")
+		Expect(s).To(BeEmpty())
+		e := c.WriteString(name, value)
+		Expect(e).To(BeNil())
+		s = c.ReadString(name)
+		Expect(s).To(Equal(value))
 	})
 })
