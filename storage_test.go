@@ -1,9 +1,11 @@
 package gcs
 
 import (
+	"errors"
 	"os"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/haoxins/g"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -52,14 +54,20 @@ var _ = Describe("Test Storage", func() {
 		name := "haoxins-gcs-package-test.txt"
 		value := g.String(time.Now().Unix())
 
-		s := c.ReadString("not-exists.txt")
+		s, e := c.ReadString("not-exists.txt")
+		Expect(errors.Is(e, storage.ErrObjectNotExist)).To(BeTrue())
 		Expect(s).To(BeEmpty())
-		e := c.WriteString(name, value)
+
+		e = c.WriteString(name, value)
 		Expect(e).To(BeNil())
-		s = c.ReadString(name)
+
+		s, e = c.ReadString(name)
+		Expect(e).To(BeNil())
 		Expect(s).To(Equal(value))
+
 		e = c.WriteString(name, "  \n\n \t\t"+value+"\t\t \n\n  ")
 		Expect(e).To(BeNil())
+
 		s = c.ReadStringTrim(name)
 		Expect(s).To(Equal(value))
 	})

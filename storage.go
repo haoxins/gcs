@@ -113,19 +113,22 @@ func (c *Client) WriteString(object string, content string) error {
 	return c.Write(object, strings.NewReader(content))
 }
 
-func (c *Client) ReadString(object string) string {
+func (c *Client) ReadString(object string) (string, error) {
 	buf := new(bytes.Buffer)
 
 	err := c.Read(object, buf)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
-	return buf.String()
+	return buf.String(), nil
 }
 
 func (c *Client) ReadStringTrim(object string) string {
-	s := c.ReadString(object)
+	s, e := c.ReadString(object)
+	if e != nil {
+		return ""
+	}
 	return strings.TrimSpace(s)
 }
 
