@@ -124,6 +124,11 @@ func (c *Client) ReadString(object string) string {
 	return buf.String()
 }
 
+func (c *Client) ReadStringTrim(object string) string {
+	s := c.ReadString(object)
+	return strings.TrimSpace(s)
+}
+
 func (c *Client) newClient(ctx context.Context) (*storage.Client, error) {
 	if c.WithoutAuthentication {
 		return storage.NewClient(ctx, option.WithoutAuthentication())
