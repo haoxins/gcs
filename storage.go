@@ -63,6 +63,24 @@ func (c *Client) Download(dest string, object string) (int64, error) {
 	return written, nil
 }
 
+func (c *Client) Delete(object string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+
+	gcsClient, err := c.newClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer gcsClient.Close()
+
+	err = gcsClient.Bucket(c.Bucket).Object(object).Delete(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) Write(object string, src io.Reader) error {
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
