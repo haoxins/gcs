@@ -17,7 +17,7 @@ var _ = Describe("Test Storage", func() {
 	It("Download should work", func() {
 		c := Client{
 			Bucket:                "gcp-public-data-nexrad-l2",
-			Timeout:               time.Second * 10,
+			Timeout:               time.Second * 30,
 			WithoutAuthentication: true,
 		}
 
@@ -90,20 +90,37 @@ var _ = Describe("Test Storage", func() {
 		}
 
 		dir := g.String(time.Now().Unix())
-		file := path.Join(dir, "1.txt")
+		f1 := path.Join(dir, "1.txt")
+		f2 := path.Join(dir, "2.txt")
+		f3 := path.Join(dir, "3.txt")
 		value := "666"
 
-		e := c.WriteString(file, value)
+		e := c.WriteString(f1, value)
+		Expect(e).To(BeNil())
+		e = c.WriteString(f2, value)
+		Expect(e).To(BeNil())
+		e = c.WriteString(f3, value)
 		Expect(e).To(BeNil())
 
-		s, e := c.ReadString(file)
+		s, e := c.ReadString(f1)
 		Expect(e).To(BeNil())
 		Expect(s).To(Equal(value))
 
-		e = c.Delete(file)
+		e = c.Delete(f1)
 		Expect(e).To(BeNil())
 
-		s, e = c.ReadString(file)
+		s, e = c.ReadString(f1)
+		Expect(errors.Is(e, storage.ErrObjectNotExist)).To(BeTrue())
+		Expect(s).To(BeEmpty())
+
+		e = c.Delete(f2, f3)
+		Expect(e).To(BeNil())
+
+		s, e = c.ReadString(f2)
+		Expect(errors.Is(e, storage.ErrObjectNotExist)).To(BeTrue())
+		Expect(s).To(BeEmpty())
+
+		s, e = c.ReadString(f3)
 		Expect(errors.Is(e, storage.ErrObjectNotExist)).To(BeTrue())
 		Expect(s).To(BeEmpty())
 	})

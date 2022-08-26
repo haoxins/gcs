@@ -63,7 +63,7 @@ func (c *Client) Download(dest string, object string) (int64, error) {
 	return written, nil
 }
 
-func (c *Client) Delete(object string) error {
+func (c *Client) Delete(objects ...string) error {
 	// Warning: Detele a directory will throw storage.ErrObjectNotExist
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -74,9 +74,11 @@ func (c *Client) Delete(object string) error {
 	}
 	defer gcsClient.Close()
 
-	err = gcsClient.Bucket(c.Bucket).Object(object).Delete(ctx)
-	if err != nil {
-		return err
+	for _, object := range objects {
+		err = gcsClient.Bucket(c.Bucket).Object(object).Delete(ctx)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
