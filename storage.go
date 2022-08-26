@@ -64,6 +64,7 @@ func (c *Client) Download(dest string, object string) (int64, error) {
 }
 
 func (c *Client) Delete(object string) error {
+	// Warning: Detele a directory will throw storage.ErrObjectNotExist
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
