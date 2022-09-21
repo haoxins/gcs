@@ -124,4 +124,24 @@ var _ = Describe("Test Storage", func() {
 		Expect(errors.Is(e, storage.ErrObjectNotExist)).To(BeTrue())
 		Expect(s).To(BeEmpty())
 	})
+
+	It("Delete not exists objects should work", func() {
+		bucket := os.Getenv("GCS_BUCKET")
+		if bucket == "" {
+			Skip("Skip because GCS_BUCKET is not set")
+		}
+
+		c := Client{
+			Bucket:                bucket,
+			Timeout:               time.Second * 10,
+			WithoutAuthentication: false,
+		}
+
+		dir := g.String(time.Now().Unix())
+		f1 := path.Join(dir, "not-exists-1.txt")
+		f2 := path.Join(dir, "not-exists-2.txt")
+
+		e := c.Delete(f1, f2)
+		Expect(e).To(BeNil())
+	})
 })
