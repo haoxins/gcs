@@ -76,7 +76,7 @@ func (c *Client) Delete(objects ...string) error {
 
 	for _, object := range objects {
 		err = gcsClient.Bucket(c.Bucket).Object(object).Delete(ctx)
-		if err != nil {
+		if err != nil && !errors.Is(err, storage.ErrObjectNotExist) {
 			return err
 		}
 	}
